@@ -3,6 +3,7 @@ pipeline {
 
     tools {
         jdk 'Java-17'
+        git 'Git'
     }
 
     stages {
