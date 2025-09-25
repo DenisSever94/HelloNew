@@ -3,12 +3,13 @@ pipeline {
 
     tools {
         jdk 'Java-17'
+        git 'Git'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/DenisSever94/HelloNew.git'
+              git branch: 'main', url: 'https://github.com/DenisSever94/HelloNew.git'
             }
         }
 
@@ -27,14 +28,13 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
-                # тут можно добавить скрипт деплоя, например копирование на сервер
             }
         }
     }
 
-    post {
-        always {
-            junit '**/target/surefire-reports/*.xml'
-        }
-    }
+    // post {
+    //     always {
+    //         junit '**/target/surefire-reports/*.xml'
+    //     }
+    // }
 }
