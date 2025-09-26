@@ -1,86 +1,59 @@
 pipeline {
     agent any
+    
+    // Явно указываем триггер вебхука
     triggers {
         githubPush()
     }
-
-    environment {
-        DOCKER_IMAGE = "your-dockerhub-username/hellonew-app"
-        DOCKER_TAG = "${env.BUILD_NUMBER}"
-        KUBE_NAMESPACE = "default"
-        APP_NAME = "hellonew-app"
-        NOTIFICATION_EMAIL = "denissedih0503@gmail.com"
-    }
-
+    
     stages {
+        stage('Webhook Debug') {
+            steps {
+                echo '🎯 Вебхук получен!'
+                script {
+                    // Покажем детали запуска
+                    echo "Build URL: ${env.BUILD_URL}"
+                    echo "Git Commit: ${env.GIT_COMMIT ?: 'Not available'}"
+                    echo "Git Branch: ${env.GIT_BRANCH ?: 'Not available'}"
+                    
+                    // Покажем причину запуска
+                    def causes = currentBuild.getBuildCauses()
+                    echo "Build causes: ${causes}"
+                }
+            }
+        }
+        
         stage('Checkout Code') {
             steps {
+                echo '📥 Забираем код из GitHub...'
                 checkout scm
-                echo '✅ Код получен из GitHub'
+                sh 'git log -1 --oneline'
             }
         }
-
-        stage('Build and Test') {
+        
+        stage('Simple Build') {
             steps {
-                echo '🔨 Сборка и тестирование Spring Boot...'
-                sh 'mvn clean package'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                echo '🐳 Создание Docker образа...'
-                script {
-                    sh 'ls -la target/'
-                    dockerImage = docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
-                }
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                echo '📤 Публикация Docker образа...'
-                script {
-                    // Для теста просто тегируем, без push в registry
-                    sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
-                    echo "Образ готов: ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                }
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                echo '🚀 Деплой в Kubernetes...'
-                sh """
-                    echo 'Применяем Kubernetes манифесты:'
-                    ls -la k8s/
-                    kubectl apply -f k8s/deployment.yaml
-                    kubectl apply -f k8s/service.yaml
-                    kubectl get pods
-                """
+                echo '🔨 Простая сборка...'
+                sh '''
+                    echo "Рабочая директория: $(pwd)"
+                    echo "Файлы в репозитории:"
+                    ls -la
+                '''
             }
         }
     }
-
+    
     post {
-        always {
-            echo '📊 Пайплайн завершен'
-        }
         success {
-            echo '✅ Успех! Приложение развернуто'
+            echo '✅ Пайплайн успешно запущен!'
             emailext (
-                subject: "SUCCESS: HelloNew App deployed",
-                body: "Spring Boot приложение успешно развернуто через CI/CD",
-                to: "${NOTIFICATION_EMAIL}"
+                subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                body: "Пайплайн выполнен успешно!",
+                to: "denissedih0503@gmail.com"
             )
         }
         failure {
-            echo '❌ Ошибка в пайплайне'
+            echo '❌ Пайплайн завершился ошибкой'
         }
     }
 }
