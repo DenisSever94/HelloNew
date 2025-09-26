@@ -21,5 +21,6 @@ public class HelloNewApp {
     @GetMapping("/health")
     public String health() {
         return "{\"status\": \"UP\"}";
+
     }
 }
