@@ -45,7 +45,7 @@ pipeline {
     
     post {
         success {
-            echo '✅ Пайплайн успешно запущен по вебхуку!'
+            echo '✅ Пайплайн успешно запущен!'
             emailext (
                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
                 body: "Пайплайн выполнен успешно!",
