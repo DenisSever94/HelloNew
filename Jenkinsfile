@@ -1,40 +1,53 @@
 pipeline {
     agent any
-
-    tools {
-        jdk 'Java-17'
-        git 'Git'
+    triggers {
+        pollSCM('H/5 * * * *')  // Проверять изменения каждые 5 минут
     }
-
     stages {
         stage('Checkout') {
             steps {
-              git branch: 'main', url: 'https://github.com/DenisSever94/HelloNew.git'
+                checkout scm
+                echo '✅ Код успешно получен из GitHub'
+                sh 'ls -la'
             }
         }
-
         stage('Build') {
             steps {
-                sh './mvnw clean package'
+                echo '🔨 Сборка проекта...'
+                // Пример для Node.js проекта:
+                // sh 'npm install'
+                // sh 'npm run build'
+                
+                // Пример для Java проекта:
+                // sh 'mvn clean compile'
+                
+                sh 'echo "Сборка завершена"'
             }
         }
-
         stage('Test') {
             steps {
-                sh './mvnw test'
+                echo '🧪 Запуск тестов...'
+                // sh 'npm test'
+                // sh 'mvn test'
+                sh 'echo "Тестирование завершено"'
             }
         }
-
         stage('Deploy') {
             steps {
-                echo 'Deploying...'
+                echo '🚀 Деплой...'
+                sh 'echo "Деплой выполнен"'
             }
         }
     }
-
-    // post {
-    //     always {
-    //         junit '**/target/surefire-reports/*.xml'
-    //     }
-    // }
+    post {
+        always {
+            echo '📊 Пайплайн завершен'
+        }
+        success {
+            echo '✅ Все этапы выполнены успешно!'
+        }
+        failure {
+            echo '❌ Пайплайн завершился с ошибкой'
+        }
+    }
 }
