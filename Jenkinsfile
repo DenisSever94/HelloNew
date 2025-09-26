@@ -29,12 +29,12 @@ pipeline {
                 echo 'Сборка и тестирование'
                 sh 'mvn clean package'
             }
-            post {
-                always {
-                    // Публикация результатов тестов
-                    junit '**/target/surefire-reports/*.xml'
-                }
-            }
+//             post {
+//                 always {
+//                     // Публикация тестов
+//                     junit '**/target/surefire-reports/*.xml'
+//                 }
+//             }
         }
 
         stage('Сборка Docker Image') {
@@ -107,6 +107,7 @@ pipeline {
                 mimeType: "text/html"
             )
         }
+
         failure {
             echo 'Пайплайн завершился ошибкой'
             // Отправка email
