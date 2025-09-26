@@ -1,44 +1,59 @@
 pipeline {
     agent any
+    
+    // Явно указываем триггер вебхука
     triggers {
-        githubPush()  // Автоматический запуск при push
+        githubPush()
     }
+    
     stages {
-        stage('Checkout') {
+        stage('Webhook Debug') {
             steps {
-                echo '🎯 Забор кода из GitHub...'
+                echo '🎯 Вебхук получен!'
+                script {
+                    // Покажем детали запуска
+                    echo "Build URL: ${env.BUILD_URL}"
+                    echo "Git Commit: ${env.GIT_COMMIT ?: 'Not available'}"
+                    echo "Git Branch: ${env.GIT_BRANCH ?: 'Not available'}"
+                    
+                    // Покажем причину запуска
+                    def causes = currentBuild.getBuildCauses()
+                    echo "Build causes: ${causes}"
+                }
+            }
+        }
+        
+        stage('Checkout Code') {
+            steps {
+                echo '📥 Забираем код из GitHub...'
                 checkout scm
+                sh 'git log -1 --oneline'
+            }
+        }
+        
+        stage('Simple Build') {
+            steps {
+                echo '🔨 Простая сборка...'
                 sh '''
-                    echo "Репо: ${env.GIT_URL}"
-                    echo "Ветка: ${env.GIT_BRANCH}"
-                    echo "Коммит: ${env.GIT_COMMIT}"
+                    echo "Рабочая директория: $(pwd)"
+                    echo "Файлы в репозитории:"
+                    ls -la
                 '''
             }
         }
-        stage('Build') {
-            steps {
-                echo '🔨 Сборка проекта...'
-                // Ваши команды сборки
-                sh 'echo "Сборка запущена из коммита: ${env.GIT_COMMIT}"'
-            }
-        }
-        stage('Notifications') {
-            steps {
-                echo '📧 Уведомления...'
-                sh 'echo "Пайплайн запущен автоматически по вебхуку"'
-            }
-        }
     }
+    
     post {
-        always {
-            echo '🏁 Пайплайн завершен'
-            sh 'echo "Время: $(date)"'
-        }
         success {
-            echo '✅ Успех! Пайплайн выполнен после коммита'
+            echo '✅ Пайплайн успешно запущен по вебхуку!'
+            emailext (
+                subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                body: "Пайплайн выполнен успешно!",
+                to: "denissedih0503@gmail.com"
+            )
         }
-        changed {
-            echo '🔄 Статус изменился по сравнению с предыдущей сборкой'
+        failure {
+            echo '❌ Пайплайн завершился ошибкой'
         }
     }
 }
