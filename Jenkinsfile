@@ -35,6 +35,7 @@ pipeline {
 //                     junit '**/target/surefire-reports/*.xml'
 //                 }
 //             }
+
         }
 
         stage('Сборка Docker Image') {
