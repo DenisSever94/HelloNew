@@ -50,7 +50,6 @@ pipeline {
             steps {
                 echo 'Публикация Docker образа в Docker Hub...'
                 script {
-                    // Используем credentials ID 'docker-hub-credentials' (нужно создать в Jenkins)
                     docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-hub-credentials') {
                         dockerImage.push()
                         dockerImage.push('latest')

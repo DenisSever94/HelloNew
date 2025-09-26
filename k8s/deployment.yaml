@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: hellonew-app
-          image: your-dockerhub-username/hellonew-app:latest
+          image: DenisSever/hellonew-app:latest
           ports:
             - containerPort: 9090
           env:
