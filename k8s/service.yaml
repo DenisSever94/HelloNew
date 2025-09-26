@@ -6,6 +6,6 @@ spec:
   selector:
     app: hellonew-app
   ports:
-    - port: 90
+    - port: 9090
       targetPort: 9090
   type: LoadBalancer
