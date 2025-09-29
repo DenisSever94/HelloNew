@@ -63,14 +63,14 @@ stage('Build Docker Image') {
     }
 }
 
-      stage('Build Docker Image') {
-            steps {
-                echo 'Создание Docker образа приложения'
-                script {
-                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
-                }
-            }
-        }
+      // stage('Build Docker Image') {
+      //       steps {
+      //           echo 'Создание Docker образа приложения'
+      //           script {
+      //               sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+      //           }
+      //       }
+      //   }
 
         stage('Deploy to Kubernetes') {
             steps {
