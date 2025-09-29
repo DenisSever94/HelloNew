@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'denissever/hellonew-app'
         DOCKER_TAG = "${env.BUILD_NUMBER}"
-        NOTIFICATION_EMAIL = 'denissedih0503@gmail.com'
+        NOTIFICATION_EMAIL = 'den.brodskiy@inbox.ru
         KUBE_NAMESPACE = "default"
         APP_NAME = "hellonew-app"
     }
