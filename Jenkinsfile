@@ -43,7 +43,7 @@ pipeline {
         stage('Package') {
             steps {
                 echo 'Создание JAR файла'
-                sh 'mvn package -DskipTests'
+                sh 'mvn package'
             }
         }
 
