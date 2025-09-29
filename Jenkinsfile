@@ -57,23 +57,23 @@ pipeline {
             }
         }
 
-        // stage('Push Docker Image') {
-        //     steps {
-        //         echo 'Публикация Docker образа в Docker Hub'
-        //         script {
-        //             withCredentials([usernamePassword(
-        //                 credentialsId: 'docker-hub-credentials',
-        //                 usernameVariable: 'DOCKER_USER',
-        //                 passwordVariable: 'DOCKER_PASS'
-        //             )]) {
-        //                 sh """
-        //                     docker login -u $DOCKER_USER -p $DOCKER_PASS
-        //                     docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
-        //                 """
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Push Docker Image') {
+            steps {
+                echo 'Публикация Docker образа в Docker Hub'
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'docker-hub-credentials',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
+                        sh """
+                            docker login -u $DOCKER_USER -p $DOCKER_PASS
+                            docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        """
+                    }
+                }
+            }
+        }
 
         stage('Deploy to Kubernetes') {
             steps {
