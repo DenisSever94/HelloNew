@@ -5,7 +5,7 @@ pipeline {
     }
 
     environment {
-        // Docker Hub
+
         DOCKER_REGISTRY = 'docker.io'
         DOCKER_IMAGE = 'DenisSever/hellonew-app'
         DOCKER_TAG = "${env.BUILD_NUMBER}"
