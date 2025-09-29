@@ -63,20 +63,11 @@ stage('Build Docker Image') {
     }
 }
 
-        stage('Push Docker Image') {
+      stage('Build Docker Image') {
             steps {
-                echo 'Публикация Docker образа в Docker Hub'
+                echo 'Создание Docker образа приложения'
                 script {
-                    withCredentials([usernamePassword(
-                        credentialsId: 'docker-hub-credentials',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASS'
-                    )]) {
-                        sh """
-                            docker login -u $DOCKER_USER -p $DOCKER_PASS
-                            docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
-                        """
-                    }
+                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 }
             }
         }
