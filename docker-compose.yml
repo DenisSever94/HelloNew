@@ -6,6 +6,8 @@ services:
       - "9090:8080"
     volumes:
       - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    privileged: true
 
   spring-app:
     image: springio/gs-spring-boot-docker
