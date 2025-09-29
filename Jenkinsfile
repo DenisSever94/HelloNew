@@ -44,7 +44,6 @@ pipeline {
             steps {
                 echo 'Создание JAR файла'
                 sh 'mvn package'
-                
             }
         }
 
