@@ -116,7 +116,7 @@ pipeline {
                 <p><strong>Ссылка:</strong> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
                 <p>Проверьте логи сборки.</p>
                 """,
-                to: "${NOTIFICATION_EMAIL}",
+                // to: "${NOTIFICATION_EMAIL}",
                 mimeType: "text/html"
             )
         }
