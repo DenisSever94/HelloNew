@@ -44,10 +44,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 echo 'Пуш образа в registry...'
-                script {
-                    // Если есть Docker registry, можно пушить
-                    // dockerImage.push()
-                    // dockerImage.push("latest")
+                script 
                     echo "Образ собран: ${env.DOCKER_IMAGE}:${env.DOCKER_TAG}"
                 }
             }
