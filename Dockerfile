@@ -15,7 +15,6 @@
 FROM jenkins/jenkins:lts
 USER root
 
-# Устанавливаем необходимые пакеты
 RUN apt-get update && \
     apt-get install -y \
     maven \
@@ -27,17 +26,14 @@ RUN apt-get update && \
 # Устанавливаем Docker CLI
 RUN curl -fsSL https://get.docker.com | sh
 
-# Настраиваем пользователя jenkins
+# Настраиваем пользователя
 RUN usermod -aG docker jenkins && \
     echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-# Устанавливаем плагины Jenkins
+# Устанавливаем только рабочие плагины
 RUN jenkins-plugin-cli --plugins \
-    git:4.14.1 \
-    workflow-aggregator:2.6 \
-    pipeline-maven:3.10.12 \
-    blueocean:1.25.8 \
-    docker-workflow:1.29 \
-    docker-plugin:1.2.10
+    git \
+    workflow-aggregator \
+    docker-workflow
 
 USER jenkins
