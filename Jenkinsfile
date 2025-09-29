@@ -85,7 +85,7 @@ pipeline {
     //             """
     //         }
     //     }
-    // }
+    }
 
     post {
         always {
@@ -122,6 +122,5 @@ pipeline {
                 mimeType: "text/html"
             )
         }
-    }
     }
 }
