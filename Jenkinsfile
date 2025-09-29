@@ -30,12 +30,12 @@ pipeline {
                 echo 'Сборка и тестирование'
                 sh 'mvn clean package -DskipTests'
             }
-//             post {
-//                 always {
-//                     // Публикация тестов
-//                     junit '**/target/surefire-reports/*.xml'
-//                 }
-//             }
+            post {
+                always {
+                    // Публикация тестов
+                    junit '**/target/surefire-reports/*.xml'
+                }
+            }
         }
 
         stage('Сборка Docker Image') {
