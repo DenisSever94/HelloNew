@@ -15,7 +15,7 @@
 FROM jenkins/jenkins:lts
 USER root
 
-# Устанавливаем необходимые пакеты
+# Устанавливаем пакеты
 RUN apt-get update && \
     apt-get install -y \
     maven \
@@ -24,13 +24,13 @@ RUN apt-get update && \
     sudo && \
     rm -rf /var/lib/apt/lists/*
 
-# Устанавливаем Docker CLI
+# Устанавливаем Docker
 RUN curl -fsSL https://get.docker.com | sh
 
-# Устанавливаем kubectl
+# Устанавливаем kubectl (простой способ)
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
-    chmod +x kubectl && \
-    mv kubectl /usr/local/bin/
+    install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
+    rm kubectl
 
 # Настраиваем пользователя
 RUN usermod -aG docker jenkins && \

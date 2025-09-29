@@ -20,8 +20,8 @@
 #  jenkins_home:
 
 
-version: '3.8'
 
+version: '3.8'
 services:
   jenkins:
     build: .
@@ -34,10 +34,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     privileged: true
     user: root
-    environment:
-      - DOCKER_HOST=unix:///var/run/docker.sock
-    networks:
-      - jenkins-net
+
 
   spring-app:
     image: springio/gs-spring-boot-docker
