@@ -1,3 +1,4 @@
+так теперь надо исправить этот файл 
 pipeline {
     agent any
 
@@ -9,28 +10,29 @@ pipeline {
         APP_NAME = "hellonew-app"
     }
 
+    
     tools {
-        maven 'M3'
-        jdk 'jdk21'
+        maven 'Maven3'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Явно указываем git репозиторий
-                git branch: 'main',
-                    url: 'https://github.com/DenisSever94/HelloNew.git'
+                checkout scm
+                echo 'Код получен из GitHub'
             }
         }
 
         stage('Build') {
             steps {
+                echo 'Сборка Java приложения'
                 sh 'mvn clean compile'
             }
         }
 
         stage('Unit Tests') {
             steps {
+                echo 'Запуск Unit-тестов'
                 sh 'mvn test'
             }
             post {
@@ -42,12 +44,14 @@ pipeline {
 
         stage('Package') {
             steps {
-                sh 'mvn package -DskipTests'
+                echo 'Создание JAR файла'
+                sh 'mvn package'
             }
         }
 
         stage('Build Docker Image') {
             steps {
+                echo 'Создание Docker образа приложения'
                 script {
                     sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 }
@@ -56,6 +60,7 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
+                echo 'Публикация Docker образа в Docker Hub'
                 script {
                     withCredentials([usernamePassword(
                         credentialsId: 'docker-hub-credentials',
@@ -73,6 +78,7 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
+                echo 'Деплой в Kubernetes кластер'
                 sh """
                     kubectl apply -f k8s/deployment.yaml -n ${KUBE_NAMESPACE}
                     kubectl apply -f k8s/service.yaml -n ${KUBE_NAMESPACE}
@@ -81,20 +87,41 @@ pipeline {
             }
         }
     }
+    
 
     post {
+        always {
+            echo 'Pipeline завершен'
+        }
         success {
+            echo 'Pipeline выполнен успешно!'
             emailext (
                 subject: "SUCCESS: Pipeline '${env.JOB_NAME}' [${env.BUILD_NUMBER}]",
-                body: "Pipeline успешно завершен\nСсылка: ${env.BUILD_URL}",
-                to: "${NOTIFICATION_EMAIL}"
+                body: """
+                <h2>Pipeline выполнен успешно! ✅</h2>
+                <p><strong>Проект:</strong> ${env.JOB_NAME}</p>
+                <p><strong>Номер сборки:</strong> ${env.BUILD_NUMBER}</p>
+                <p><strong>Ветка:</strong> ${env.GIT_BRANCH}</p>
+                <p><strong>Docker образ:</strong> ${DOCKER_IMAGE}:${DOCKER_TAG}</p>
+                <p><strong>Ссылка:</strong> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                """,
+                to: "${NOTIFICATION_EMAIL}",
+                mimeType: "text/html"
             )
         }
         failure {
+            echo 'Pipeline завершился ошибкой'
             emailext (
                 subject: "FAILURE: Pipeline '${env.JOB_NAME}' [${env.BUILD_NUMBER}]",
-                body: "Pipeline завершился ошибкой\nСсылка: ${env.BUILD_URL}",
-                to: "${NOTIFICATION_EMAIL}"
+                body: """
+                <h2>Pipeline завершился ошибкой! ❌</h2>
+                <p><strong>Проект:</strong> ${env.JOB_NAME}</p>
+                <p><strong>Номер сборки:</strong> ${env.BUILD_NUMBER}</p>
+                <p><strong>Ссылка:</strong> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                <p>Проверьте логи сборки.</p>
+                """,
+                to: "${NOTIFICATION_EMAIL}",
+                mimeType: "text/html"
             )
         }
     }
