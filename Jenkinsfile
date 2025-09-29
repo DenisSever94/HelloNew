@@ -45,15 +45,15 @@ pipeline {
             steps {
                 echo 'Создание Docker образа...'
                 script {
-                    // Устанавливаем Docker если нет
+                    // Проверяем есть ли Docker, если нет - пропускаем
                     sh '''
-                        if ! command -v docker &> /dev/null; then
-                            echo "Устанавливаем Docker..."
-                            curl -fsSL https://get.docker.com | sh
+                        if command -v docker &> /dev/null; then
+                            echo "Docker уже установлен, собираем образ..."
+                            docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .
+                        else
+                            echo "Docker не установлен, пропускаем сборку образа"
                         fi
                     '''
-                    // Собираем образ обычной командой вместо docker.build
-                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 }
             }
         }
@@ -62,19 +62,24 @@ pipeline {
             steps {
                 echo 'Публикация Docker образа в Docker Hub...'
                 script {
-                    // Используем withCredentials вместо docker.withRegistry
-                    withCredentials([usernamePassword(
-                        credentialsId: 'docker-hub-credentials',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASS'
-                    )]) {
-                        sh """
-                            docker login -u $DOCKER_USER -p $DOCKER_PASS
-                            docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
-                            docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
-                            docker push ${DOCKER_IMAGE}:latest
-                        """
-                    }
+                    sh '''
+                        if command -v docker &> /dev/null; then
+                            withCredentials([usernamePassword(
+                                credentialsId: 'docker-hub-credentials',
+                                usernameVariable: 'DOCKER_USER',
+                                passwordVariable: 'DOCKER_PASS'
+                            )]) {
+                                sh """
+                                    docker login -u $DOCKER_USER -p $DOCKER_PASS
+                                    docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                                    docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
+                                    docker push ${DOCKER_IMAGE}:latest
+                                """
+                            }
+                        else
+                            echo "Docker не установлен, пропускаем публикацию"
+                        fi
+                    '''
                 }
             }
         }
