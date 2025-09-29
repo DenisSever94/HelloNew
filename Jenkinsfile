@@ -48,20 +48,20 @@ pipeline {
             }
         }
 
-stage('Build Docker Image') {
-    agent {
-        docker {
-            image 'docker:latest'
-            args '-v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.docker:/root/.docker'
-        }
-    }
-    steps {
-        echo 'Создание Docker образа приложения'
-        script {
-            sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
-        }
-    }
-}
+// stage('Build Docker Image') {
+//     agent {
+//         docker {
+//             image 'docker:latest'
+//             args '-v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.docker:/root/.docker'
+//         }
+//     }
+//     steps {
+//         echo 'Создание Docker образа приложения'
+//         script {
+//             sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+//         }
+//     }
+// }
 
       stage('Build Docker Image') {
             steps {
