@@ -1,9 +1,5 @@
 pipeline {
     agent any
-        tools {
-            maven 'Maven3'
-        }
-
     triggers {
         githubPush()
     }
@@ -33,12 +29,12 @@ pipeline {
                 echo 'Сборка и тестирование'
                 sh 'mvn clean package'
             }
-            post {
-                always {
-                    // Публикация тестов
-                    junit '**/target/surefire-reports/*.xml'
-                }
-            }
+//             post {
+//                 always {
+//                     // Публикация тестов
+//                     junit '**/target/surefire-reports/*.xml'
+//                 }
+//             }
         }
 
         stage('Сборка Docker Image') {
