@@ -41,11 +41,19 @@ pipeline {
             }
         }
 
-        stage('Сборка Docker Image') {
+              stage('Сборка Docker Image') {
             steps {
                 echo 'Создание Docker образа...'
                 script {
-                    dockerImage = docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                    // Устанавливаем Docker если нет
+                    sh '''
+                        if ! command -v docker &> /dev/null; then
+                            echo "Устанавливаем Docker..."
+                            curl -fsSL https://get.docker.com | sh
+                        fi
+                    '''
+                    // Собираем образ обычной командой вместо docker.build
+                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 }
             }
         }
@@ -54,9 +62,18 @@ pipeline {
             steps {
                 echo 'Публикация Docker образа в Docker Hub...'
                 script {
-                    docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-hub-credentials') {
-                        dockerImage.push()
-                        dockerImage.push('latest')
+                    // Используем withCredentials вместо docker.withRegistry
+                    withCredentials([usernamePassword(
+                        credentialsId: 'docker-hub-credentials',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
+                        sh """
+                            docker login -u $DOCKER_USER -p $DOCKER_PASS
+                            docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                            docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
+                            docker push ${DOCKER_IMAGE}:latest
+                        """
                     }
                 }
             }
