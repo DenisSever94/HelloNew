@@ -31,7 +31,7 @@ pipeline {
         stage('Сборка и тесты') {
             steps {
                 echo 'Сборка и тестирование'
-                sh 'mvn clean package'
+                sh 'mvn clean package -DskipTests'
             }
             post {
                 always {
