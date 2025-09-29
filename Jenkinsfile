@@ -14,6 +14,7 @@ pipeline {
         // Kubernetes
         KUBE_NAMESPACE = "default"
         APP_NAME = "hellonew-app"
+        
     }
 
     stages {
