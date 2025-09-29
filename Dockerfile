@@ -27,17 +27,13 @@ RUN apt-get update && \
 # Устанавливаем Docker CLI
 RUN curl -fsSL https://get.docker.com | sh
 
-# Настраиваем пользователя jenkins
+# Устанавливаем kubectl
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    chmod +x kubectl && \
+    mv kubectl /usr/local/bin/
+
+# Настраиваем пользователя
 RUN usermod -aG docker jenkins && \
     echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-# Устанавливаем плагины Jenkins
-RUN jenkins-plugin-cli --plugins \
-    git:4.14.1 \
-    workflow-aggregator:2.6 \
-    pipeline-maven:3.10.12 \
-    blueocean:1.25.8 \
-    docker-workflow:1.29 \
-    docker-plugin:1.2.10
 
 USER jenkins
