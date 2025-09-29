@@ -9,6 +9,7 @@ pipeline {
         APP_NAME = "hellonew-app"
     }
 
+    
     tools {
         maven 'Maven3'
     }
