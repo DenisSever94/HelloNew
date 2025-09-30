@@ -15,20 +15,20 @@
 #FROM jenkins/jenkins:lts
 #USER root
 
-FROM jenkins/agent:latest
-
-# Установка Git
-RUN apt-get update && apt-get install -y git
-
-# Установка Maven
-RUN apt-get install -y maven
-
-# Установка других инструментов
-RUN apt-get install -y curl docker.io kubectl
-
-# Настройка Maven (опционально)
-ENV MAVEN_HOME /usr/share/maven
-ENV MAVEN_CONFIG "/var/jenkins_home/.m2"
+#FROM jenkins/agent:latest
+#
+## Установка Git
+#RUN apt-get update && apt-get install -y git
+#
+## Установка Maven
+#RUN apt-get install -y maven
+#
+## Установка других инструментов
+#RUN apt-get install -y curl docker.io kubectl
+#
+## Настройка Maven (опционально)
+#ENV MAVEN_HOME /usr/share/maven
+#ENV MAVEN_CONFIG "/var/jenkins_home/.m2"
 
 # Устанавливаем пакеты
 #RUN apt-get update && \
@@ -53,3 +53,13 @@ ENV MAVEN_CONFIG "/var/jenkins_home/.m2"
 #
 #USER jenkins
 
+FROM maven:3.9.11-openjdk-17 AS builder
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
+
+FROM openjdk:17-jre-slim
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+EXPOSE 8080
+CMD ["java", "-jar", "app.jar"]
