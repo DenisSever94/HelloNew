@@ -4,8 +4,8 @@ metadata:
   name: hellonew-service
 spec:
   selector:
-    app: hellonew-app
+    app: hellonew
   ports:
-    - port: 9090
-      targetPort: 9090
+    - port: 80
+      targetPort: 8080
   type: LoadBalancer

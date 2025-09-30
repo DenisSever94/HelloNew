@@ -2,35 +2,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hellonew-app
-  labels:
-    app: hellonew-app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: hellonew-app
+      app: hellonew
   template:
     metadata:
       labels:
-        app: hellonew-app
+        app: hellonew
     spec:
       containers:
-        - name: hellonew-app
-          image: DenisSever/hellonew-app:latest
+        - name: hellonew
+          image: your-dockerhub-username/hellonew:latest
           ports:
-            - containerPort: 9090
-          env:
-            - name: SPRING_PROFILES_ACTIVE
-              value: "production"
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 9090
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 9090
-            initialDelaySeconds: 5
-            periodSeconds: 5
+            - containerPort: 8080
