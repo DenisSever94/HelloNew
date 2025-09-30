@@ -60,7 +60,8 @@ pipeline {
             sh """
                 curl -s -X POST "https://api.telegram.org/bot8248760993:AAEAuvqWuIx3EkuResqq9qVduybO-w75jLY/sendMessage" \\
                 -d chat_id=974769976 \\
-                -d text="✅ FULL CI/CD SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER} 🐳 Image: denissever/denissever:${env.BUILD_NUMBER} View: ${env.BUILD_URL}"
+                -d text="✅ FULL CI/CD SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER} 🐳
+                 Image: denissever/denissever:${env.BUILD_NUMBER} View: ${env.BUILD_URL}"
             """
         }
     }
