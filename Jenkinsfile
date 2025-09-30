@@ -29,7 +29,7 @@ pipeline {
                     echo "🐳 Docker Image Information"
                     echo "Image: denissever/denissever:${BUILD_NUMBER}"
                     echo "Image: denissever/denissever:latest"
-                    echo "✅ Docker image would be built and pushed on Linux environment"
+                    echo "✅ Docker image would be built and pushed"
                 }
             }
         }
